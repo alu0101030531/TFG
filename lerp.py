@@ -14,8 +14,7 @@ class Lerp:
     factorValue = 0
     while(factorValue <= 1):
       a = self.lerpStep(factorValue)
-      print(a.vector)
-      vectors.append(a)
+      vectors.append(a.getVector())
       factorValue = round(factorValue + self.factor, 1)
     return vectors
 
@@ -24,6 +23,5 @@ class Lerp:
     b = self.vector2.scalarMultiplication(factor)
     return a.addition(b)
 
-lerp = Lerp(Vector([[[2, 3, 6]]]), Vector([[[1, 2, 3]]]), 0.1)
-lerp.lerp()
+
 

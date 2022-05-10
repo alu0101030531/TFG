@@ -10,7 +10,7 @@ class Vector:
       for pixelw in range(len(self.vector[pixelh])):
         vector[pixelh].append([])
         for rgb in range(len(self.vector[pixelh][pixelw])):
-          vector[pixelh][pixelw].append(round(self.vector[pixelh][pixelw][rgb] * scalar, 1 ))
+          vector[pixelh][pixelw].append(self.vector[pixelh][pixelw][rgb] * scalar)
     return Vector(vector)
   
   def getVector(self):
@@ -23,5 +23,5 @@ class Vector:
       for pixelw in range(len(self.vector[pixelh])):
         additionVector[pixelh].append([])
         for rgb in range(len(self.vector[pixelh][pixelw])):
-          additionVector[pixelh][pixelw].append(round(self.vector[pixelh][pixelw][rgb] + vector.getVector()[pixelh][pixelw][rgb], 1))
+          additionVector[pixelh][pixelw].append(self.vector[pixelh][pixelw][rgb] + vector.getVector()[pixelh][pixelw][rgb])
     return Vector(additionVector)

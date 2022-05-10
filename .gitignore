@@ -1,3 +1,10 @@
 test
 libnvinfer7_7.1.3-1+cuda11.0_amd64.deb
 nvidia-machine-learning-repo-ubuntu1804_1.0.0-1_amd64.deb
+discriminator
+decoder
+autoencoder
+grayscale
+img
+mlp
+training_checkpoints
