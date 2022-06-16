@@ -16,16 +16,16 @@ class Discriminator:
       self.height = height
       self.dimensions = dimensions
   
-  def model(self):
+  def model(self, filters):
     model = tf.keras.Sequential()
-    model.add(layers.Conv2D(16, 4, strides=(2,2), padding='same', input_shape=[self.width, self.height, self.dimensions]))
+    model.add(layers.Conv2D(filters, 4, strides=(2,2), padding='same', input_shape=[self.width, self.height, self.dimensions]))
     model.add(layers.LeakyReLU(alpha=0.2))  
-    model.add(layers.Conv2D(32, 4, strides=(2, 2), padding='same'))
+    model.add(layers.Conv2D(filters * 2, 4, strides=(2, 2), padding='same'))
     model.add(layers.LeakyReLU(alpha=0.2))
-    model.add(layers.Conv2D(32, 4, strides=(2, 2), padding='same'))
-    model.add(layers.LeakyReLU(alpha=0.2))
+    model.add(layers.Conv2D(filters * 2, 4, strides=(2, 2), padding='same'))
+    model.add()
     model.add(layers.Flatten())
-    model.add(layers.Dropout(0.2))
+    model.add(layers.Dropout(0.5))
     model.add(layers.Dense(1, activation="sigmoid"))
     return model
 

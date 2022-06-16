@@ -1,4 +1,5 @@
 import keras
+import tensorflow as tf
 from keras import layers
 from pytz import timezone
 from data import *
@@ -11,19 +12,25 @@ class Mlp:
   
   def createLayers(self):
     x = layers.Flatten()(self.inputShape)
-    x = layers.Dense(64, activation='relu')(x)
-    x = layers.Dense(128, activation='relu')(x)
-    self.mlpLayers = layers.Dense(76, activation='linear')(x)
+    x = layers.Dense(64, activation="tanh")(x)
+    x = layers.LeakyReLU(alpha=0.2)(x)
+    x = layers.Dense(64, activation="tanh")(x)
+    x = layers.LeakyReLU(alpha=0.2)(x)
+    x = layers.Dense(128, activation="tanh")(x)
+    x = layers.LeakyReLU(alpha=0.2)(x)
+    #x = layers.Dropout(0.4)(x)
+    x = layers.Dense(80, activation="tanh")(x)
+    self.mlpLayers = layers.LeakyReLU(alpha=0.2)(x)
   
   def readData(self, path, path2):
     encoder = keras.models.load_model("encoder")
     self.data1 = ImageData(path)
-    self.data1.readData()
+    self.data1.readData(1000)
     self.train, self.test = self.data1.prepareData(0.2, False)
     self.train = encoder.predict(self.train)
     self.test = encoder.predict(self.test)
     self.data2 = TextData(path2)
-    self.data2.readData()
+    self.data2.readData(1000)
     self.train2, self.test2 = self.data2.splitData(0.2, False)
 
   def model(self):
@@ -32,19 +39,21 @@ class Mlp:
 
   def fit(self):
     self.mlpModel.fit(self.train, self.train2,
-          epochs=20,
-          batch_size=10,
+          epochs=30,
+          batch_size=512,
           shuffle=True,
           verbose=1,
           validation_data=(self.test, self.test2),
           callbacks=[TensorBoard(log_dir='/tmp/mlp')])
+    
 
   def save(self, path):
     self.mlpModel.save(path)
+    return self.mlpModel
 
-mlp = Mlp(keras.Input(shape=(59,59,76)))
+mlp = Mlp(keras.Input(shape=(4,4,8)))
 mlp.createLayers()
-mlp.readData("test", "quaternions.txt")
+mlp.readData("Datasets/wristHands64x64", "Quaternions/WristHands64x64quaternions.txt")
 mlp.model()
 mlp.fit()
-mlp.save("mlp")
+mlp = mlp.save("mlp")

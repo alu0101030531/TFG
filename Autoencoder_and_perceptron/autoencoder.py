@@ -2,7 +2,8 @@ from decoder import Decoder
 from encoder import Encoder
 from data import Data, ImageData
 from keras.callbacks import TensorBoard
-import keras
+from tensorflow import keras
+import tensorflow as tf
 
 class Autoencoder:
   def __init__(self, width, height, dimensions) -> None:
@@ -19,8 +20,22 @@ class Autoencoder:
 
   def readData(self, path):
     self.data = ImageData(path)
-    self.data.readData()
-    self.train, self.test = self.data.prepareData(0.2, False)
+    self.data.readData(500)
+    self.train, self.test = self.data.prepareData(0.2, True)
+
+  def predict(self):
+    predictions = self.autoencoder.predict(self.test)
+    for i in range(10):
+      predicted_img = tf.keras.utils.array_to_img(predictions[i])
+      predicted_img.save(f"predict2/predict_940_{i}.png")
+      real_img = tf.keras.utils.array_to_img(self.test[i])
+      real_img.save(f"predict2/real_940_{i}.png")
+
+  def encoderPredict(self, imgs):
+    return self.encoderModel.predict(imgs)
+
+  def decoderPredict(self, imgs):
+    return self.decoderModel.predict(imgs)
 
   def model(self):
     self.encoderModel = self.encoder.model()
@@ -32,29 +47,30 @@ class Autoencoder:
   
   def fit(self):
     self.autoencoder.fit(self.train, self.train,
-                epochs=20,
-                batch_size=4,
+                epochs=50,
+                batch_size=10,
                 shuffle=True,
                 verbose=1,
                 validation_data=(self.test, self.test),
                 callbacks=[TensorBoard(log_dir='/tmp/autoencoder')])
   
   def save(self, path):
-    self.autoencoder.save(path)
+    tf.keras.models.save_model(self.autoencoder, path, save_format="tf")
   
   def saveEncoder(self, path):
-    #self.encoder.model()
-    self.encoder.save(path)
+    self.encoder.model()
+    self.encoder.save_model(path, save_format="tf")
   
   def saveDecoder(self, path):
-    #self.decoder.model()
-    self.decoder.save(path)
+    self.decoder.model()
+    self.decoder.save_model(path, save_format="tf")
 
-autoencoder = Autoencoder(940, 940, 3)
+autoencoder = Autoencoder(100, 100, 3)
 autoencoder.createLayers()
-autoencoder.readData("test")
+autoencoder.readData("hands100x100")
 autoencoder.model()
 autoencoder.fit()
 autoencoder.save("autoencoder")
 autoencoder.saveEncoder("encoder")
 autoencoder.saveDecoder("decoder")
+autoencoder.predict()
